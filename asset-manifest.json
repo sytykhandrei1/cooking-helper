@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/cooking-helper/static/css/main.40c9567c.css",
+    "main.js": "/cooking-helper/static/js/main.f42a9d89.js",
+    "index.html": "/cooking-helper/index.html",
+    "main.40c9567c.css.map": "/cooking-helper/static/css/main.40c9567c.css.map",
+    "main.f42a9d89.js.map": "/cooking-helper/static/js/main.f42a9d89.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.40c9567c.css",
+    "static/js/main.f42a9d89.js"
+  ]
+}
