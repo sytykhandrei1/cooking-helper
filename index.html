@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cooking Helper - Помощник повара</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+        
+        .logo {
+            font-size: 3em;
+            font-weight: bold;
+            color: #22c55e;
+            margin-bottom: 20px;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            color: #cccccc;
+            margin-bottom: 30px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .feature-card {
+            background: rgba(51, 51, 51, 0.8);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        
+        .feature-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #22c55e;
+        }
+        
+        .feature-description {
+            color: #cccccc;
+            line-height: 1.6;
+        }
+        
+        .cta {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #22c55e;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: background 0.3s ease;
+            margin: 10px;
+        }
+        
+        .btn:hover {
+            background: #16a34a;
+        }
+        
+        .btn-secondary {
+            background: #444444;
+        }
+        
+        .btn-secondary:hover {
+            background: #555555;
+        }
+        
+        .info {
+            background: rgba(51, 51, 51, 0.8);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .info h3 {
+            color: #22c55e;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .info p {
+            color: #cccccc;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .github-link {
+            color: #22c55e;
+            text-decoration: none;
+        }
+        
+        .github-link:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2em;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🍽️ Cooking Helper</div>
+            <div class="subtitle">Веб-приложение для выбора блюд по ингредиентам</div>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <div class="feature-title">Умный поиск</div>
+                <div class="feature-description">
+                    Введите продукты, которые есть дома, и получите список возможных блюд с умными предложениями
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎲</div>
+                <div class="feature-title">Случайный выбор</div>
+                <div class="feature-description">
+                    Нажмите кнопку и получите случайное блюдо с гарниром - идеально для вдохновения
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">👶</div>
+                <div class="feature-title">Детский режим</div>
+                <div class="feature-description">
+                    Специальные рецепты, адаптированные для детей, с учетом их предпочтений
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⚠️</div>
+                <div class="feature-title">Учет аллергенов</div>
+                <div class="feature-description">
+                    Исключение блюд с вашими аллергенами для безопасного питания
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <div class="feature-title">Мобильная версия</div>
+                <div class="feature-description">
+                    Оптимизировано для iPhone и Android - удобно использовать на кухне
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🍽️</div>
+                <div class="feature-title">Категории блюд</div>
+                <div class="feature-description">
+                    Выберите тип блюда: завтрак, обед, ужин или гарниры
+                </div>
+            </div>
+        </div>
+        
+        <div class="cta">
+            <a href="https://github.com/sytykhandrei1/cooking-helper" class="btn">
+                📁 Посмотреть код на GitHub
+            </a>
+            <a href="https://github.com/sytykhandrei1/cooking-helper" class="btn btn-secondary">
+                ⭐ Поставить звезду
+            </a>
+        </div>
+        
+        <div class="info">
+            <h3>🚀 Приложение готово к работе!</h3>
+            <p>Это демо-версия приложения Cooking Helper. Полная версия с React-интерфейсом будет доступна после настройки GitHub Actions.</p>
+            <p>Приложение включает в себя:</p>
+            <ul style="text-align: left; max-width: 600px; margin: 0 auto; color: #cccccc;">
+                <li>Базу данных из 200+ блюд</li>
+                <li>Умный поиск по ингредиентам</li>
+                <li>Случайный выбор с комбинациями</li>
+                <li>Настройки аллергенов и детского режима</li>
+                <li>Адаптивный дизайн</li>
+            </ul>
+            <p style="margin-top: 20px;">
+                <a href="https://github.com/sytykhandrei1/cooking-helper" class="github-link">
+                    Посмотреть исходный код на GitHub →
+                </a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
