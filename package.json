@@ -2,6 +2,7 @@
   "name": "cooking-helper",
   "version": "1.0.0",
   "description": "Приложение для выбора блюд по ингредиентам",
+  "homepage": "https://sytykhandrei1.github.io/cooking-helper",
   "main": "index.js",
   "scripts": {
     "start": "react-scripts start",
