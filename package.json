@@ -1,34 +1,28 @@
 {
-  "name": "cooking-helper",
+  "name": "random-roulette",
   "version": "1.0.0",
-  "description": "Приложение для выбора блюд по ингредиентам",
-  "homepage": "https://sytykhandrei1.github.io/cooking-helper",
-  "main": "index.js",
+  "description": "Веб-приложение для выбора случайного победителя с помощью рулетки",
+  "main": "roulette.html",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "lint": "echo 'No linter configured yet'"
+    "start": "python -m http.server 8000",
+    "build": "echo 'No build process needed for static files'",
+    "deploy": "echo 'Deploy to Netlify'"
   },
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "lucide-react": "^0.263.1"
+  "keywords": [
+    "roulette",
+    "random",
+    "winner",
+    "selection",
+    "russian"
+  ],
+  "author": "Tat",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/username/random-roulette.git"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+  "bugs": {
+    "url": "https://github.com/username/random-roulette/issues"
+  },
+  "homepage": "https://username.github.io/random-roulette"
 }
-
-
