@@ -1,5 +1,9 @@
+import { curatedDishes } from './curatedDishes.js';
+import { expandedDishes } from './expandedDishes.js';
+import { inferAllergens } from '../utils/dishMatching.js';
+
 // База данных блюд с ингредиентами и рецептами
-export const dishes = [
+const legacyDishes = [
   {
     id: 1,
     name: "Спагетти карбонара",
@@ -2057,8 +2061,23 @@ export const dishes = [
   }
 ];
 
+const childUnsafeIngredients = ['чили', 'вино', 'коньяк', 'вермут', 'кофе'];
+
+export const dishes = [...legacyDishes, ...curatedDishes, ...expandedDishes]
+  .filter((dish, index, collection) =>
+    collection.findIndex(candidate => candidate.name.toLowerCase() === dish.name.toLowerCase()) === index
+  )
+  .map(dish => ({
+    ...dish,
+    name: `${dish.name.charAt(0).toUpperCase()}${dish.name.slice(1)}`,
+    allergens: [...new Set([...(dish.allergens || []), ...inferAllergens(dish.ingredients || [])])],
+    forChildren: dish.forChildren && !dish.ingredients.some(ingredient =>
+      childUnsafeIngredients.some(marker => ingredient.toLowerCase().includes(marker))
+    ),
+  }));
+
 // Список всех доступных ингредиентов
-export const allIngredients = [
+const baseIngredients = [
   "макароны", "бекон", "яйца", "сыр пармезан", "чеснок", "черный перец",
   "помидоры", "лук", "зелень", "масло", "картофель", "молоко",
   "куриная грудка", "розмарин", "оливковое масло", "соль", "перец",
@@ -2101,9 +2120,14 @@ export const allIngredients = [
   "фалафель", "нутовые котлеты", "овощные котлеты"
 ];
 
+export const allIngredients = [...new Set([
+  ...baseIngredients,
+  ...dishes.flatMap(dish => dish.ingredients || []),
+])].sort((a, b) => a.localeCompare(b, 'ru'));
+
 // Список аллергенов
 export const allergens = [
-  "яйца", "молочные продукты", "глютен", "рыба", "орехи", "соя"
+  "яйца", "молочные продукты", "глютен", "рыба", "морепродукты", "орехи", "соя", "кунжут"
 ];
 
 // Категории блюд
