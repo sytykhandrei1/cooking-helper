@@ -1,167 +1,121 @@
 import React, { useState } from 'react';
 import './App.css';
-import Header from './components/Header';
-import IngredientSearch from './components/IngredientSearch';
-import RandomDish from './components/RandomDish';
-import DishResults from './components/DishResults';
-import Settings from './components/Settings';
-import { dishes, dishCategories } from './data/dishes';
-import { dishHasExcludedAllergen, eligibleRandomDishes, findDishesByIngredients, getDishFamily } from './utils/dishMatching';
+import AllergenSheet from './components/AllergenSheet';
+import DishOverlay from './components/DishOverlay';
+import IngredientSheet from './components/IngredientSheet';
+import MobileHome from './components/MobileHome';
+import { dishes } from './data/dishes';
+import { featuredDish } from './data/featuredDish';
+import { eligibleRandomDishes, findDishesByIngredients, getDishFamily } from './utils/dishMatching';
+
+const appDishes = [featuredDish, ...dishes];
 
 function App() {
-  const [currentView, setCurrentView] = useState('random');
-  const [searchResults, setSearchResults] = useState([]);
+  const [activeSheet, setActiveSheet] = useState(null);
+  const [resultDish, setResultDish] = useState(null);
+  const [resultSource, setResultSource] = useState('random');
   const [userAllergens, setUserAllergens] = useState([]);
   const [childMode, setChildMode] = useState(false);
+  const [childToastVersion, setChildToastVersion] = useState(0);
+  const [selectedIngredients, setSelectedIngredients] = useState([]);
+  const [ingredientError, setIngredientError] = useState('');
   const [usedDishes, setUsedDishes] = useState([]);
-  const [usedSideDishes, setUsedSideDishes] = useState([]);
   const [recentDishFamilies, setRecentDishFamilies] = useState([]);
-  const [lastRandomCategory, setLastRandomCategory] = useState('all');
-  const [lastSearchMode, setLastSearchMode] = useState('ingredients');
+  const [hasShownFeaturedDish, setHasShownFeaturedDish] = useState(false);
 
-  // Функция поиска блюд по ингредиентам
-  const searchDishesByIngredients = (selectedIngredients) => {
-    const filteredDishes = findDishesByIngredients(dishes, selectedIngredients, {
-      excludedAllergens: userAllergens,
-      childMode,
-    });
-    setSearchResults(filteredDishes);
-    setCurrentView('results');
-    setLastSearchMode('ingredients');
+  const toggleAllergen = (allergen) => {
+    setUserAllergens((current) => current.includes(allergen)
+      ? current.filter((item) => item !== allergen)
+      : [...current, allergen]);
   };
 
-  // Функция случайного выбора блюда с категорией
-  const getRandomDish = (category) => {
-    const targetCategory = category || lastRandomCategory || 'all';
-
-    // 1) выбираем самостоятельное блюдо, исключая гарниры
-    const isMainCategory = (cat) => cat === 'breakfast' || cat === 'lunch' || cat === 'dinner';
-    const mainCategoryFilter = isMainCategory(targetCategory) ? targetCategory : 'all';
-
-    const eligibleMainsAll = eligibleRandomDishes(dishes, mainCategoryFilter, {
+  const chooseRandomDish = () => {
+    const allEligible = eligibleRandomDishes(appDishes, 'all', {
       excludedAllergens: userAllergens,
       childMode,
     });
-
-    // Исключаем уже использованные основные блюда
-    let eligibleMains = eligibleMainsAll.filter(dish => !usedDishes.includes(dish.id));
-    if (eligibleMains.length === 0) {
+    let available = allEligible.filter((dish) => !usedDishes.includes(dish.id));
+    if (!available.length) {
       setUsedDishes([]);
-      eligibleMains = eligibleMainsAll; // разрешаем повтор после сброса
+      available = allEligible;
     }
+    const diverse = available.filter((dish) => !recentDishFamilies.includes(getDishFamily(dish)));
+    if (diverse.length) available = diverse;
+    if (!available.length) return;
 
-    // Разные рецепты одного семейства не должны идти серией: например,
-    // несколько лингвини с разными соусами или несколько вариантов курицы.
-    const diverseMains = eligibleMains.filter(dish => !recentDishFamilies.includes(getDishFamily(dish)));
-    if (diverseMains.length > 0) eligibleMains = diverseMains;
+    const canShowFeatured = !hasShownFeaturedDish;
+    const featuredCandidate = canShowFeatured && available.find((dish) => dish.id === featuredDish.id);
+    const selected = featuredCandidate || available[Math.floor(Math.random() * available.length)];
 
-    if (eligibleMains.length === 0) return; // нет основных блюд после всех фильтров
-
-    const main = eligibleMains[Math.floor(Math.random() * eligibleMains.length)];
-
-    // 2) выбираем гарнир
-    const eligibleSidesAll = dishes.filter(dish => {
-      return dish.category === 'side' &&
-        !dishHasExcludedAllergen(dish, userAllergens) &&
-        (!childMode || dish.forChildren);
-    });
-
-    let eligibleSides = eligibleSidesAll;
-    if (main.sideDishes && main.sideDishes.length > 0) {
-      const preferred = eligibleSidesAll.filter(side =>
-        main.sideDishes.some(name =>
-          side.name.toLowerCase().includes(name.toLowerCase()) ||
-          name.toLowerCase().includes(side.name.toLowerCase())
-        )
-      );
-      if (preferred.length > 0) eligibleSides = preferred;
-    }
-
-    // Гарниры тоже работают как «мешок»: не повторяем их, пока не перебраны
-    // все совместимые варианты.
-    let unusedSides = eligibleSides.filter(side => !usedSideDishes.includes(side.id));
-    if (unusedSides.length === 0 && eligibleSides.length > 0) {
-      setUsedSideDishes([]);
-      unusedSides = eligibleSides;
-    }
-
-    const side = !main.isCompleteDish && unusedSides.length > 0
-      ? unusedSides[Math.floor(Math.random() * unusedSides.length)]
-      : undefined;
-
-    // 3) формируем результат как пара
-    const result = side ? [main, side] : [main];
-
-    // Запоминаем использованный основной
-    setUsedDishes(prev => [...prev, main.id]);
-    setRecentDishFamilies(prev => [...prev, getDishFamily(main)].slice(-12));
-    if (side) setUsedSideDishes(prev => [...prev, side.id]);
-
-    setSearchResults(result);
-    setCurrentView('results');
-    setLastRandomCategory(targetCategory);
-    setLastSearchMode('random');
+    setHasShownFeaturedDish(true);
+    setUsedDishes((current) => [...current, selected.id]);
+    setRecentDishFamilies((current) => [...current, getDishFamily(selected)].slice(-12));
+    setResultSource('random');
+    setResultDish(selected);
+    setActiveSheet(null);
   };
 
-  const renderCurrentView = () => {
-    switch (currentView) {
-      case 'random':
-        return (
-          <RandomDish 
-            onGetRandom={getRandomDish}
-            onBack={() => setCurrentView('random')}
-            categories={dishCategories}
-          />
-        );
-      case 'ingredients':
-        return (
-          <IngredientSearch 
-            onSearch={searchDishesByIngredients}
-            onBack={() => setCurrentView('random')}
-          />
-        );
-      case 'results':
-        return (
-          <DishResults 
-            dishes={searchResults}
-            onBack={() => setCurrentView('random')}
-            showAnotherRandom={lastSearchMode === 'random'}
-            onGetAnotherRandom={() => getRandomDish(lastRandomCategory)}
-          />
-        );
-      case 'settings':
-        return (
-          <Settings 
-            userAllergens={userAllergens}
-            setUserAllergens={setUserAllergens}
-            childMode={childMode}
-            setChildMode={setChildMode}
-            onBack={() => setCurrentView('random')}
-          />
-        );
-      default:
-        return (
-          <RandomDish 
-            onGetRandom={getRandomDish}
-            onBack={() => setCurrentView('random')}
-            categories={dishCategories}
-          />
-        );
+  const chooseFromIngredients = (excludedDishId = null) => {
+    const results = findDishesByIngredients(appDishes, selectedIngredients, {
+      excludedAllergens: userAllergens,
+      childMode,
+    });
+    if (!results.length) {
+      setIngredientError('Не нашли подходящего цельного блюда. Добавьте ещё один продукт или снимите фильтр.');
+      return;
     }
+    const shortlist = results.slice(0, 8);
+    const alternatives = shortlist.filter((dish) => dish.id !== excludedDishId);
+    const available = alternatives.length ? alternatives : shortlist;
+    setIngredientError('');
+    setResultSource('ingredients');
+    setResultDish(available[Math.floor(Math.random() * available.length)]);
+    setActiveSheet(null);
+  };
+
+  const toggleChildMode = () => {
+    const nextValue = !childMode;
+    setChildMode(nextValue);
+    if (nextValue) setChildToastVersion((value) => value + 1);
   };
 
   return (
-    <div className="App">
-      <Header 
-        currentView={currentView}
-        onNavigate={setCurrentView}
+    <div className="app-shell">
+      <MobileHome
+        allergenCount={userAllergens.length}
         childMode={childMode}
-        userAllergens={userAllergens}
-        onRandomDish={getRandomDish}
+        childToastVersion={childToastVersion}
+        onAllergens={() => setActiveSheet('allergens')}
+        onChildMode={toggleChildMode}
+        onRandom={chooseRandomDish}
+        onIngredients={() => {
+          setIngredientError('');
+          setActiveSheet('ingredients');
+        }}
       />
-      <main className="main-content">
-        {renderCurrentView()}
-      </main>
+
+      <AllergenSheet
+        open={activeSheet === 'allergens'}
+        selected={userAllergens}
+        onToggle={toggleAllergen}
+        onClose={() => setActiveSheet(null)}
+      />
+      <IngredientSheet
+        open={activeSheet === 'ingredients'}
+        selected={selectedIngredients}
+        onChange={setSelectedIngredients}
+        onSubmit={chooseFromIngredients}
+        onClose={() => setActiveSheet(null)}
+        error={ingredientError}
+      />
+      <DishOverlay
+        dish={resultDish}
+        onClose={() => setResultDish(null)}
+        onAnother={resultSource === 'ingredients'
+          ? () => chooseFromIngredients(resultDish?.id)
+          : chooseRandomDish}
+        actionLabel={resultSource === 'ingredients' ? 'Другое блюдо' : 'Новое блюдо'}
+      />
     </div>
   );
 }

@@ -115,6 +115,8 @@ export const scoreDishForIngredients = (dish, selectedIngredients) => {
 export const findDishesByIngredients = (dishes, selectedIngredients, options = {}) => {
   const { excludedAllergens = [], childMode = false } = options;
   return dishes
+    .filter(dish => dish.category !== 'side')
+    .filter(dish => dish.isCompleteDish !== false)
     .filter(dish => !dishHasExcludedAllergen(dish, excludedAllergens))
     .filter(dish => !childMode || dish.forChildren)
     .map(dish => ({ ...dish, ...scoreDishForIngredients(dish, selectedIngredients) }))
@@ -131,6 +133,7 @@ export const eligibleRandomDishes = (dishes, category, options = {}) => {
   const { excludedAllergens = [], childMode = false } = options;
   return dishes
     .filter(dish => dish.category !== 'side')
+    .filter(dish => dish.isCompleteDish !== false)
     .filter(dish => category === 'all' || !category || dish.category === category)
     .filter(dish => !dishHasExcludedAllergen(dish, excludedAllergens))
     .filter(dish => !childMode || dish.forChildren);

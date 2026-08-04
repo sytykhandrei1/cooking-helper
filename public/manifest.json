@@ -2,10 +2,10 @@
   "name": "Помощник повара",
   "short_name": "Повар",
   "description": "Приложение для выбора блюд по ингредиентам",
-  "start_url": "/",
+  "start_url": "/cooking-helper/",
   "display": "standalone",
-  "background_color": "#222222",
-  "theme_color": "#222222",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "orientation": "portrait",
   "icons": [
     {
@@ -22,5 +22,4 @@
   "categories": ["food", "lifestyle", "utilities"],
   "lang": "ru"
 }
-
 

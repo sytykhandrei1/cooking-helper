@@ -31,7 +31,7 @@ test('варианты курицы относятся к одному семе�
 });
 
 test('поиск оставляет блюда, для которых не хватает максимум двух продуктов', () => {
-  const results = findDishesByIngredients([omelet], ['яйца']);
+  const results = findDishesByIngredients([{ ...omelet, isCompleteDish: true }], ['яйца']);
   expect(results).toHaveLength(1);
   expect(results[0].missingIngredients).toEqual(['помидоры', 'сыр']);
 });
@@ -50,6 +50,19 @@ test('случайная выдача включает полноценные б
   const fullDish = { ...omelet, isCompleteDish: true };
   const side = { ...omelet, id: 2, category: 'side' };
   expect(eligibleRandomDishes([fullDish, side], 'all')).toEqual([fullDish]);
+});
+
+test('поиск не возвращает гарнир или блюдо, которому нужен отдельный гарнир', () => {
+  const fullDish = { ...omelet, isCompleteDish: true };
+  const incompleteDish = { ...omelet, id: 2, isCompleteDish: false };
+  const side = { ...omelet, id: 3, category: 'side', isCompleteDish: false };
+  expect(findDishesByIngredients([fullDish, incompleteDish, side], ['яйца']).map(dish => dish.id)).toEqual([fullDish.id]);
+});
+
+test('случайная выдача не возвращает блюдо, которому требуется отдельный гарнир', () => {
+  const fullDish = { ...omelet, isCompleteDish: true };
+  const incompleteDish = { ...omelet, id: 2, isCompleteDish: false };
+  expect(eligibleRandomDishes([fullDish, incompleteDish], 'all')).toEqual([fullDish]);
 });
 
 test('режим для детей исключает блюда без детской отметки', () => {
