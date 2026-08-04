@@ -69,7 +69,7 @@ const IngredientSearch = ({ onSearch, onBack }) => {
               placeholder="Введите название продукта и нажмите Enter..."
               value={customIngredient}
               onChange={(e) => setCustomIngredient(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addCustomIngredient()}
+              onKeyDown={(e) => e.key === 'Enter' && addCustomIngredient()}
             />
           </div>
         </div>

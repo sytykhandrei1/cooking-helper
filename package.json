@@ -1,28 +1,24 @@
 {
-  "name": "random-roulette",
-  "version": "1.0.0",
-  "description": "Веб-приложение для выбора случайного победителя с помощью рулетки",
-  "main": "roulette.html",
+  "name": "cooking-helper",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Помощник выбора домашних блюд",
+  "homepage": "https://sytykhandrei1.github.io/cooking-helper",
   "scripts": {
-    "start": "python -m http.server 8000",
-    "build": "echo 'No build process needed for static files'",
-    "deploy": "echo 'Deploy to Netlify'"
+    "start": "vite",
+    "build": "vite build",
+    "test": "vitest run",
+    "quality": "node scripts/check-dishes.js"
   },
-  "keywords": [
-    "roulette",
-    "random",
-    "winner",
-    "selection",
-    "russian"
-  ],
-  "author": "Tat",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/username/random-roulette.git"
+  "dependencies": {
+    "lucide-react": "^0.263.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
-  "bugs": {
-    "url": "https://github.com/username/random-roulette/issues"
-  },
-  "homepage": "https://username.github.io/random-roulette"
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.3",
+    "vite": "^8.1.4",
+    "vitest": "^4.1.10"
+  }
 }
