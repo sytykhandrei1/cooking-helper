@@ -1,0 +1,273 @@
+.desktop-app,
+.desktop-app * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.desktop-app {
+  min-height: 100vh;
+  color: #fff;
+  background: #222;
+  display: flex;
+  flex-direction: column;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.desktop-app .main-content {
+  width: 100%;
+  max-width: 1200px;
+  flex: 1;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.desktop-app .btn {
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 25px;
+  color: #222;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.desktop-app .btn:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.desktop-app .btn:active {
+  transform: translateY(0);
+}
+
+.desktop-app .btn-secondary {
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 25px;
+  color: #222;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+}
+
+.desktop-app .btn-secondary:hover {
+  background: #f5f5f5;
+  transform: translateY(-1px);
+}
+
+.desktop-app .btn-large {
+  width: 100%;
+  padding: 16px 32px;
+  border-radius: 25px;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.desktop-app .card {
+  padding: 24px;
+  border: 1px solid #555;
+  border-radius: 16px;
+  background: #333;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.desktop-app .card:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  transform: translateY(-4px);
+}
+
+.desktop-app .grid {
+  display: grid;
+  gap: 20px;
+}
+
+.desktop-app .grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.desktop-app .grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.desktop-app h1 {
+  margin-bottom: 0.5rem;
+  color: #fff;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.desktop-app h2 {
+  margin-bottom: 1rem;
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.desktop-app h3 {
+  margin-bottom: 0.5rem;
+  color: #ccc;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.desktop-app .form-group {
+  margin-bottom: 20px;
+}
+
+.desktop-app .form-label {
+  margin-bottom: 8px;
+  color: #ccc;
+  display: block;
+  font-weight: 500;
+}
+
+.desktop-app .form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #555;
+  border-radius: 8px;
+  color: #fff;
+  background: #444;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.desktop-app .form-input:focus {
+  border-color: #667eea;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.desktop-app .checkbox-group {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.desktop-app .checkbox-item {
+  padding: 12px;
+  border-radius: 8px;
+  color: #fff;
+  background: #444;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.desktop-app .checkbox-item:hover {
+  background: #555;
+}
+
+.desktop-app .checkbox-item input[type="checkbox"] {
+  margin-right: 12px;
+  transform: scale(1.2);
+}
+
+.desktop-app .checkbox-item.checked {
+  border: 2px solid #667eea;
+  background: #667eea;
+}
+
+.desktop-app .tag {
+  margin: 4px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 20px;
+  color: #fff;
+  background: #444;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.desktop-app .tag:hover {
+  background: #555;
+}
+
+.desktop-app .tag.selected {
+  color: #222;
+  background: #fff;
+}
+
+.desktop-app .tag.allergen {
+  color: #fff;
+  background: #e53e3e;
+}
+
+.desktop-app .tag.child-friendly {
+  color: #fff;
+  background: #38a169;
+}
+
+.desktop-app .fade-in {
+  animation: desktop-fade-in 0.5s ease-out;
+}
+
+/* Mobile recipe styles use the same class names; keep them out of the legacy modal. */
+.desktop-app .recipe-content {
+  max-width: 600px;
+  margin: 0;
+  padding: 0;
+}
+
+.desktop-app .recipe-section {
+  margin-top: 0;
+}
+
+.desktop-app .text-center {
+  text-align: center;
+}
+
+.desktop-app .mb-4 {
+  margin-bottom: 1rem;
+}
+
+.desktop-app .mt-4 {
+  margin-top: 1rem;
+}
+
+.desktop-app .flex {
+  display: flex;
+}
+
+.desktop-app .flex-wrap {
+  flex-wrap: wrap;
+}
+
+.desktop-app .gap-2 {
+  gap: 0.5rem;
+}
+
+.desktop-app .justify-center {
+  justify-content: center;
+}
+
+.desktop-app .items-center {
+  align-items: center;
+}
+
+@keyframes desktop-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

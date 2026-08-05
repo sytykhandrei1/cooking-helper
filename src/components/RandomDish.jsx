@@ -7,7 +7,7 @@ const RandomDish = ({ onGetRandom, onBack, categories }) => {
     <div className="random-dish fade-in">
       <div className="random-header">
         <h1>Случайное блюдо</h1>
-        <p>Выберите категорию и получите случайное блюдо с гарниром</p>
+        <p>Выберите категорию и получите случайное блюдо</p>
       </div>
 
       <div className="random-content">
