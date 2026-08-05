@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import ingredientsArtwork from '../assets/featured-dish/beans-zucchini-ingredients.png';
-import prepArtwork from '../assets/featured-dish/step-prep.png';
-import panArtwork from '../assets/featured-dish/step-pan.png';
-import finishArtwork from '../assets/featured-dish/step-finish.png';
+import prepArtwork from '../assets/featured-dish/step-prep-square.png';
+import panArtwork from '../assets/featured-dish/step-pan-square.png';
+import finishArtwork from '../assets/featured-dish/step-finish-square.png';
 import CloseButton from './CloseButton';
+import IngredientComposition from './IngredientComposition';
 
 const stepArtwork = [prepArtwork, panArtwork, finishArtwork];
 
@@ -64,9 +64,7 @@ const DishOverlay = ({ dish, onClose, onAnother, actionLabel = 'Новое бл�
             Порций {servings} · Время {timeMinutes} минут
           </div>
 
-          <figure className="recipe-hero">
-            <img src={ingredientsArtwork} alt="Набор ингредиентов для рецепта" />
-          </figure>
+          <IngredientComposition dish={dish} />
 
           <section className="recipe-section recipe-ingredients">
             <h2>Ингредиенты</h2>
@@ -80,9 +78,11 @@ const DishOverlay = ({ dish, onClose, onAnother, actionLabel = 'Новое бл�
             <ol>
               {steps.map((step, index) => (
                 <li key={`${dish.id}-${index}`}>
-                  <div className="recipe-step-image">
-                    <img src={stepArtwork[Math.min(index, stepArtwork.length - 1)]} alt="" />
-                  </div>
+                  <img
+                    className="recipe-step-image"
+                    src={stepArtwork[Math.min(index, stepArtwork.length - 1)]}
+                    alt=""
+                  />
                   <p>{index + 1}. {step}</p>
                 </li>
               ))}
