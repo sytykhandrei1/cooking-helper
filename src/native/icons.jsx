@@ -64,3 +64,30 @@ export const ChecklistIcon = strokeIcon([
   'M9 11L12 14L22 4',
   'M21 12V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3H16',
 ]);
+
+export const SunIcon = strokeIcon([
+  'M17 12A5 5 0 1 1 7 12A5 5 0 1 1 17 12',
+  'M12 1V3',
+  'M12 21V23',
+  'M4.22 4.22L5.64 5.64',
+  'M18.36 18.36L19.78 19.78',
+  'M1 12H3',
+  'M21 12H23',
+  'M4.22 19.78L5.64 18.36',
+  'M18.36 5.64L19.78 4.22',
+]);
+
+export const MoonIcon = strokeIcon([
+  'M21 12.79A9 9 0 1 1 11.21 3A7 7 0 0 0 21 12.79Z',
+]);
+
+export const SearchIcon = strokeIcon([
+  'M19 11A8 8 0 1 1 3 11A8 8 0 1 1 19 11',
+  'M21 21L16.65 16.65',
+]);
+
+export const PlusIcon = strokeIcon(['M12 5V19', 'M5 12H19']);
+
+export const CheckIcon = strokeIcon(['M20 6L9 17L4 12']);
+
+export const XIcon = strokeIcon(['M18 6L6 18', 'M6 6L18 18']);

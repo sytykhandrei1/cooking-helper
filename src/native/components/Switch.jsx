@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet } from 'react-native';
-import { colors, radii, timings } from '../theme';
+import { useTheme } from '../ThemeContext';
+import { radii, timings } from '../theme';
 
 // Аналог .switch из App.css. Цвет фона в RN анимируется только JS-драйвером,
 // поэтому вся анимация идёт через один Animated.Value без useNativeDriver.
 const Switch = ({ on }) => {
+  const { colors } = useTheme();
   const progress = useRef(new Animated.Value(on ? 1 : 0)).current;
 
   useEffect(() => {
@@ -21,7 +23,7 @@ const Switch = ({ on }) => {
   });
   const knobColor = progress.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#ffffff', '#000000'],
+    outputRange: ['#ffffff', colors.accentInk],
   });
   const translateX = progress.interpolate({ inputRange: [0, 1], outputRange: [0, 20] });
 
@@ -33,12 +35,7 @@ const Switch = ({ on }) => {
 };
 
 const styles = StyleSheet.create({
-  track: {
-    width: 50,
-    height: 30,
-    padding: 3,
-    borderRadius: radii.pill,
-  },
+  track: { width: 50, height: 30, padding: 3, borderRadius: radii.pill },
   knob: {
     width: 24,
     height: 24,

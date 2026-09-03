@@ -2,7 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChildIcon } from '../icons';
-import { colors, easing, radii, timings } from '../theme';
+import { useTheme } from '../ThemeContext';
+import { easing, radii, timings } from '../theme';
 
 const BEZIER = Easing.bezier(...easing.standard);
 
@@ -10,6 +11,7 @@ const BEZIER = Easing.bezier(...easing.standard);
 // В вебе за это отвечали CSS-переходы разной длительности для opacity и transform,
 // поэтому здесь два независимых Animated.Value.
 const ChildModeToast = () => {
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const opacity = useRef(new Animated.Value(0)).current;
@@ -46,11 +48,17 @@ const ChildModeToast = () => {
         accessibilityLiveRegion="polite"
         style={[
           styles.toast,
-          { maxWidth: width - 32, opacity, transform: [{ translateY }, { scale }] },
+          {
+            borderColor: colors.toastBorder,
+            backgroundColor: colors.toastSurface,
+            maxWidth: width - 32,
+            opacity,
+            transform: [{ translateY }, { scale }],
+          },
         ]}
       >
         <ChildIcon size={22} color={colors.activeYellow} />
-        <Animated.Text style={styles.label}>Детский режим включен, учтем это в блюдах</Animated.Text>
+        <Animated.Text style={[styles.label, { color: colors.text }]}>Детский режим включен, учтем это в блюдах</Animated.Text>
       </Animated.View>
     </View>
   );
@@ -65,9 +73,7 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     paddingRight: 14,
     borderWidth: 1,
-    borderColor: colors.toastBorder,
     borderRadius: radii.toggleList,
-    backgroundColor: colors.toastSurface,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 9,
@@ -77,7 +83,7 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
     elevation: 8,
   },
-  label: { flexShrink: 1, color: colors.text, fontSize: 15, fontWeight: '600', lineHeight: 20 },
+  label: { flexShrink: 1, fontSize: 15, fontWeight: '600', lineHeight: 20 },
 });
 
 export default ChildModeToast;
