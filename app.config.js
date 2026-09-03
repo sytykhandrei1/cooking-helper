@@ -1,6 +1,5 @@
-// Базовый путь зависит от площадки: на Cloudflare Workers приложение живёт
-// в корне домена, на GitHub Pages — в подпапке /cooking-helper. Остальная
-// конфигурация читается из app.json.
+// Production на Cloudflare Workers живёт в корне домена. Переменная оставлена
+// для локальных или preview-сборок с нестандартным базовым путём.
 export default ({ config }) => ({
   ...config,
   experiments: {

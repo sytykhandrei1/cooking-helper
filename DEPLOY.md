@@ -1,98 +1,62 @@
-# 🚀 Инструкция по деплою на Netlify
+# Cloudflare Workers deployment runbook
 
-## Автоматический деплой (рекомендуется)
+## Production
 
-### 1. Подключение GitHub репозитория
-1. Зайдите на [netlify.com](https://netlify.com)
-2. Нажмите "New site from Git"
-3. Выберите "GitHub" и авторизуйтесь
-4. Найдите репозиторий `cooking-helper` и выберите его
-5. Настройте деплой:
-   - **Branch to deploy**: `main`
-   - **Build command**: оставьте пустым (статические файлы)
-   - **Publish directory**: `.` (корневая папка)
+- URL: <https://cooking-helper.asytykh.workers.dev/>
+- Worker: `cooking-helper`
+- Branch: `main`
+- Workflow: `.github/workflows/deploy-workers.yml`
+- Assets directory: `dist-native/`
 
-### 2. Настройка переменных окружения (опционально)
-Если используете GitHub Actions, добавьте в настройках сайта:
-- `NETLIFY_AUTH_TOKEN` - токен авторизации Netlify
-- `NETLIFY_SITE_ID` - ID сайта
+GitHub Pages, `gh-pages`, Netlify, and GitLab Pages are obsolete for this
+project and must not be used as production targets.
 
-### 3. Настройка перенаправлений
-В файле `netlify.toml` уже настроены перенаправления:
-- Все запросы перенаправляются на `roulette.html`
-- Настроены заголовки безопасности
-- Кэширование статических файлов
+## Automatic deployment
 
-## Ручной деплой
+Every push to `main` performs:
 
-### 1. Сборка проекта
+1. `npm ci`
+2. `npm run quality`
+3. `npm test`
+4. `npm run build`
+5. `npx wrangler deploy`
+6. an HTTP smoke test of the production URL
+
+Required GitHub Actions secrets:
+
+- `CLOUDFLARE_API_TOKEN` with permission to edit Workers;
+- `CLOUDFLARE_ACCOUNT_ID` for the target account.
+
+## Normal delivery
+
 ```bash
-# Клонируйте репозиторий
-git clone https://github.com/sytykhandrei1/cooking-helper.git
-cd cooking-helper
-
-# Убедитесь, что все файлы на месте
-ls -la
-# Должны быть: roulette.html, roulette.css, roulette.js
-```
-
-### 2. Загрузка на Netlify
-1. Зайдите на [netlify.com](https://netlify.com)
-2. Нажмите "New site from Git"
-3. Выберите "Deploy manually"
-4. Перетащите папку с файлами в область загрузки
-5. Или выберите папку через "Browse to upload"
-
-### 3. Настройка сайта
-- **Site name**: `random-roulette` (или любое другое имя)
-- **Main page**: `roulette.html`
-- **Custom domain**: (опционально)
-
-## Проверка деплоя
-
-После деплоя проверьте:
-1. ✅ Главная страница загружается
-2. ✅ Рулетка работает корректно
-3. ✅ Адаптивность на мобильных устройствах
-4. ✅ Сохранение данных в localStorage
-5. ✅ Все анимации работают
-
-## Обновление сайта
-
-### Автоматическое обновление
-При каждом push в ветку `main` сайт автоматически обновится.
-
-### Ручное обновление
-1. Внесите изменения в код
-2. Сделайте commit и push:
-```bash
-git add .
-git commit -m "feat: описание изменений"
+git switch main
+git pull --ff-only origin main
+git config core.hooksPath .githooks
+npm ci
+npm run check
+npm run git:identity
+git add <intended-files>
+git commit -m "Describe the completed change"
 git push origin main
 ```
 
-## Мониторинг
+Both identities must be `sytykhandrei1 <andrei3758@gmail.com>` so GitHub
+attributes commits to the owner's contribution graph. After pushing, wait for
+the `Deploy to Cloudflare Workers` workflow and verify the production URL.
 
-- **Deploy logs**: доступны в панели Netlify
-- **Analytics**: включите в настройках сайта
-- **Forms**: если планируете собирать данные
+Do not force-push normal work. If history repair is explicitly requested, fetch
+first and use an exact `--force-with-lease`; never use blind `--force`.
 
-## Troubleshooting
+## Manual deployment
 
-### Проблема: Сайт не загружается
-- Проверьте, что `roulette.html` находится в корневой папке
-- Убедитесь, что все файлы загружены
+Use only when GitHub Actions cannot be used and Cloudflare credentials are
+already available in the local environment:
 
-### Проблема: Стили не применяются
-- Проверьте пути к CSS файлам
-- Убедитесь, что `roulette.css` загружен
+```bash
+npm ci
+npm run deploy
+```
 
-### Проблема: JavaScript не работает
-- Проверьте консоль браузера на ошибки
-- Убедитесь, что `roulette.js` загружен
-
-## Полезные ссылки
-
-- [Документация Netlify](https://docs.netlify.com/)
-- [GitHub Actions для Netlify](https://github.com/marketplace/actions/netlify-actions)
-- [Настройка перенаправлений](https://docs.netlify.com/routing/redirects/)
+Never commit Cloudflare tokens, account credentials, `.wrangler/`, or generated
+`dist-native/` files.
