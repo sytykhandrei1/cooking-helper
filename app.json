@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Помощник повара",
+    "slug": "cooking-helper",
+    "version": "1.1.0",
+    "scheme": "cooking-helper",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#000000",
+    "ios": {
+      "bundleIdentifier": "com.sytykhandrei1.cookinghelper",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.sytykhandrei1.cookinghelper",
+      "edgeToEdgeEnabled": true,
+      "adaptiveIcon": {
+        "backgroundColor": "#000000"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "experiments": {
+      "baseUrl": "/cooking-helper"
+    }
+  }
+}

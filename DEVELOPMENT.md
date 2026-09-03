@@ -2,16 +2,17 @@
 
 ## 📋 Требования
 
-- Node.js 16+ 
-- npm 7+
+- Node.js 20+
+- npm 10+
 - Git
-- Современный браузер
+- Expo Go на телефоне — чтобы открыть приложение на iOS или Android
+- Xcode или Android Studio — только для нативных сборок
 
 ## 🚀 Настройка окружения
 
 ### 1. Клонирование проекта
 ```bash
-git clone https://gitlab.com/your-username/cooking-helper.git
+git clone https://github.com/sytykhandrei1/cooking-helper.git
 cd cooking-helper
 ```
 
@@ -25,68 +26,84 @@ npm install
 npm start
 ```
 
-Приложение будет доступно по адресу: http://localhost:3000
+Expo покажет QR-код: отсканируйте его в Expo Go, чтобы открыть приложение на
+телефоне. Тот же интерфейс в браузере — `npm run web`.
+
+Прежняя веб-версия на Vite пока жива и поднимается через `npm run legacy:start`.
 
 ## 📁 Структура проекта
 
 ```
 cooking-helper/
-├── public/                 # Статические файлы
-│   ├── index.html
-│   └── manifest.json
-├── src/                   # Исходный код
-│   ├── components/        # React компоненты
-│   │   ├── DishResults.js
-│   │   ├── Header.js
-│   │   ├── IngredientSearch.js
-│   │   ├── MainMenu.js
-│   │   ├── RandomDish.js
-│   │   ├── Settings.js
-│   │   └── ShareButton.js
-│   ├── data/             # Данные приложения
-│   │   └── dishes.js
-│   ├── App.js            # Главный компонент
-│   ├── App.css           # Стили приложения
-│   ├── index.js          # Точка входа
-│   └── index.css         # Базовые стили
-├── .gitignore            # Git ignore файл
-├── .gitlab-ci.yml        # CI/CD конфигурация
-├── package.json          # Зависимости и скрипты
-└── README.md             # Документация
+├── index.js               # Точка входа Expo
+├── app.json               # Конфигурация Expo
+├── babel.config.cjs       # Пресет babel-preset-expo
+├── metro.config.cjs       # Конфигурация Metro
+├── src/
+│   ├── native/            # React Native интерфейс
+│   │   ├── App.jsx        # Корень нативного приложения
+│   │   ├── theme.js       # Дизайн-токены вместо CSS-переменных
+│   │   ├── icons.jsx      # Иконки на react-native-svg
+│   │   ├── components/    # BottomSheet, AllergenSheet, Switch и другие
+│   │   └── screens/       # HomeScreen
+│   ├── data/              # База блюд — общая для веба и нативного кода
+│   ├── utils/             # Логика подбора — общая для веба и нативного кода
+│   ├── components/        # Прежний веб-интерфейс, удаляется после миграции
+│   ├── App.jsx            # Прежний веб-корень
+│   ├── MobileApp.jsx      # Прежний мобильный веб-интерфейс
+│   ├── DesktopApp.jsx     # Прежний десктопный интерфейс
+│   └── *.css              # Стили прежнего веб-интерфейса
+├── scripts/               # Проверка базы блюд
+├── index.html             # Точка входа прежней веб-сборки
+├── vite.config.js         # Конфигурация прежней веб-сборки
+└── package.json
 ```
 
 ## 🔧 Доступные скрипты
 
 ### `npm start`
-Запускает приложение в режиме разработки с hot reload.
+Запускает Expo с hot reload: QR-код для Expo Go, клавиши для симуляторов.
+
+### `npm run ios` / `npm run android` / `npm run web`
+Открывает приложение сразу на нужной платформе.
+
+### `npm run export:web`
+Собирает веб-версию нативного интерфейса в `dist-native/`.
+
+### `npm run legacy:start` / `npm run legacy:build`
+Прежняя веб-версия на Vite, пока миграция не закончена.
 
 ### `npm run build`
-Создает production сборку в папке `build/`.
+Production-сборка в `dist/`. Пока это прежняя веб-версия — именно она уезжает
+в GitHub Pages. После миграции скрипт переключится на `expo export`.
 
 ### `npm test`
-Запускает тесты (пока не настроены).
+Запускает vitest: тесты логики подбора блюд, визуалов ингредиентов и токенов темы.
 
-### `npm run eject`
-Извлекает конфигурацию Create React App (не рекомендуется).
+### `npm run quality`
+Проверяет базу блюд: обязательные поля, дубли, категории, аллергены.
 
 ## 🎨 Стилизация
 
-### CSS подход
-- Используются обычные CSS файлы
-- Стили компонентов в отдельных файлах
-- Глобальные стили в `index.css`
-- Стили приложения в `App.css`
+### Подход
+- Нативный интерфейс: `StyleSheet.create` рядом с компонентом
+- Дизайн-токены — в `src/native/theme.js`, они заменяют CSS-переменные `:root`
+- Анимации — `Animated` вместо CSS-переходов
+- Безопасные зоны — `react-native-safe-area-context` вместо `env(safe-area-inset-*)`
+- `clamp()` и единицы `vw`/`dvh` считаются от `useWindowDimensions()`
+- Медиазапросы по высоте — сравнение с `SHORT_SCREEN_HEIGHT`
 
 ### Цветовая схема
-- Основной фон: `#1a1a1a`
-- Карточки: `#333333`
-- Акцентный цвет: `#22c55e`
-- Текст: `#ffffff`
+- Фон: `#000`
+- Карточки: `#1c1c1e`
+- Круглые контролы: `#2c2c2e`
+- Акцент: `#f6f7f8`
+- Активное состояние: `#c48a00`
+- Второстепенный текст: `#9299a2`
 
 ### Адаптивность
-- Mobile-first подход
-- Breakpoints: 768px, 1024px
-- Гибкая сетка с CSS Grid
+- Портретная ориентация
+- Отдельная раскладка для экранов высотой до 700 px
 
 ## 📊 Данные
 

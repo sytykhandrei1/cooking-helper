@@ -46,3 +46,14 @@ coverage/
 # Temporary folders
 tmp/
 temp/
+
+# Expo
+.expo/
+.expo-shared/
+dist-native/
+web-build/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
