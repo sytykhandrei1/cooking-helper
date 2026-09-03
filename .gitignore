@@ -57,3 +57,6 @@ web-build/
 *.p12
 *.key
 *.mobileprovision
+
+# Cloudflare Workers
+.wrangler/

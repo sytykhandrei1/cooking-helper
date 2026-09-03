@@ -37,6 +37,8 @@ Expo покажет QR-код: отсканируйте его в Expo Go, чт�
 cooking-helper/
 ├── index.js               # Точка входа Expo
 ├── app.json               # Конфигурация Expo
+├── app.config.js          # Базовый путь веб-сборки из EXPO_WEB_BASE_URL
+├── wrangler.jsonc         # Раздача статики на Cloudflare Workers
 ├── babel.config.cjs       # Пресет babel-preset-expo
 ├── metro.config.cjs       # Конфигурация Metro
 ├── src/
@@ -70,6 +72,10 @@ cooking-helper/
 
 ### `npm run export:web`
 Собирает веб-версию нативного интерфейса в `dist-native/`.
+
+### `npm run deploy`
+Собирает веб-версию и публикует её на Cloudflare Workers. Обычно не нужен:
+публикацией занимается workflow на каждый пуш.
 
 ### `npm run legacy:start` / `npm run legacy:build`
 Прежняя веб-версия на Vite, пока миграция не закончена.

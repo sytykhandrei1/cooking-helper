@@ -1,0 +1,12 @@
+{
+  // Приложение целиком статическое: воркер только раздаёт файлы веб-сборки
+  // Expo, серверного кода нет. Каталог собирается командой npm run export:web.
+  "name": "cooking-helper",
+  "compatibility_date": "2026-09-03",
+  "assets": {
+    "directory": "./dist-native",
+    // Навигация внутри приложения живёт на состоянии, а не на маршрутах,
+    // поэтому любой неизвестный путь отдаёт index.html.
+    "not_found_handling": "single-page-application"
+  }
+}

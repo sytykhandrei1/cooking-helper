@@ -48,4 +48,25 @@ npm run export:web   # веб-сборка нового React Native интер�
 
 ## Деплой
 
-Приложение публикуется в GitHub Pages автоматически после изменений в ветке `main`.
+React Native версия публикуется на Cloudflare Workers: каждый пуш запускает
+[`.github/workflows/deploy-workers.yml`](./.github/workflows/deploy-workers.yml) —
+проверка базы, тесты, сборка, публикация. Красный тест останавливает деплой.
+
+Нужны два секрета репозитория — Settings → Secrets and variables → Actions:
+
+- `CLOUDFLARE_API_TOKEN` — токен с правом `Edit Cloudflare Workers`;
+- `CLOUDFLARE_ACCOUNT_ID` — Account ID из дашборда Cloudflare.
+
+Ручная публикация, если нужна:
+
+```bash
+npx wrangler login
+npm run deploy
+```
+
+Воркер только раздаёт статику, серверного кода нет — см. `wrangler.jsonc`.
+Базовый путь задаёт переменная `EXPO_WEB_BASE_URL`: пустая для корня домена
+на Workers, `/cooking-helper` для подпапки на GitHub Pages.
+
+Прежняя веб-версия на Vite пока публикуется в GitHub Pages автоматически после
+изменений в ветке `main` — [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml).

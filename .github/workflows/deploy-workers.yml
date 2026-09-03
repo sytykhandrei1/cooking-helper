@@ -1,0 +1,63 @@
+name: Deploy to Cloudflare Workers
+
+# Публикует веб-сборку React Native приложения на Cloudflare Workers
+# при каждом пуше. Ручной запуск — вкладка Actions, кнопка "Run workflow".
+on:
+  push:
+    branches:
+      - main
+      # Ветка миграции на React Native. Убрать, когда она вольётся в main.
+      - claude/react-native-rewrite-baznvl
+  workflow_dispatch:
+
+# Параллельные деплои перетирали бы друг друга: держим одну очередь
+# и отменяем неактуальную сборку, если следом прилетел новый пуш.
+concurrency:
+  group: deploy-workers
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Check Cloudflare credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          missing=""
+          [ -z "$CLOUDFLARE_API_TOKEN" ] && missing="$missing CLOUDFLARE_API_TOKEN"
+          [ -z "$CLOUDFLARE_ACCOUNT_ID" ] && missing="$missing CLOUDFLARE_ACCOUNT_ID"
+          if [ -n "$missing" ]; then
+            echo "::error::Не заданы секреты репозитория:$missing"
+            echo "Settings → Secrets and variables → Actions → New repository secret"
+            exit 1
+          fi
+
+      - run: npm ci
+
+      - name: Check dish database
+        run: npm run quality
+
+      # Красный тест останавливает публикацию: на домен уезжает
+      # только то, что прошло проверки.
+      - name: Test
+        run: npm test
+
+      # Пустой EXPO_WEB_BASE_URL — приложение живёт в корне домена воркера.
+      - name: Build web bundle
+        run: npm run export:web
+
+      - name: Deploy to Cloudflare Workers
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

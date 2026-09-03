@@ -21,9 +21,6 @@
     "web": {
       "bundler": "metro",
       "output": "single"
-    },
-    "experiments": {
-      "baseUrl": "/cooking-helper"
     }
   }
 }
