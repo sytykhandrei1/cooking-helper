@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AllergenSheet from './components/AllergenSheet';
 import HomeScreen from './screens/HomeScreen';
+import { DEFAULT_TAB } from './tabs';
 import { colors } from './theme';
 
 // Корень React Native приложения: объединяет общие настройки из веб-версии
@@ -12,6 +13,7 @@ const App = () => {
   const [userAllergens, setUserAllergens] = useState([]);
   const [childMode, setChildMode] = useState(false);
   const [activeSheet, setActiveSheet] = useState(null);
+  const [activeTab, setActiveTab] = useState(DEFAULT_TAB);
   const [childToastVersion, setChildToastVersion] = useState(0);
 
   const toggleAllergen = (allergen) => {
@@ -34,9 +36,11 @@ const App = () => {
           allergenCount={userAllergens.length}
           childMode={childMode}
           childToastVersion={childToastVersion}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
           onAllergens={() => setActiveSheet('allergens')}
           onChildMode={toggleChildMode}
-          // Подбор блюда и шит продуктов переносим на следующем шаге миграции:
+          // Действие активного таба переносим на следующем шаге миграции:
           // логика в src/utils/dishMatching.js уже переносима как есть.
           onRandom={undefined}
           onIngredients={undefined}

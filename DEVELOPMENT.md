@@ -44,7 +44,8 @@ cooking-helper/
 │   │   ├── App.jsx        # Корень нативного приложения
 │   │   ├── theme.js       # Дизайн-токены вместо CSS-переменных
 │   │   ├── icons.jsx      # Иконки на react-native-svg
-│   │   ├── components/    # BottomSheet, AllergenSheet, Switch и другие
+│   │   ├── tabs.js        # Описание нижних табов
+│   │   ├── components/    # LinearTabBar, BottomSheet, AllergenSheet и другие
 │   │   └── screens/       # HomeScreen
 │   ├── data/              # База блюд — общая для веба и нативного кода
 │   ├── utils/             # Логика подбора — общая для веба и нативного кода

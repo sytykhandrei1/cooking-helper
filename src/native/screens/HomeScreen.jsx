@@ -2,19 +2,27 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ChildModeToast from '../components/ChildModeToast';
+import LinearTabBar, { TAB_BAR_BOTTOM, TAB_BAR_HEIGHT } from '../components/LinearTabBar';
 import RoundControl from '../components/RoundControl';
-import { AllergenIcon, ChildIcon, SettingsIcon } from '../icons';
+import { AllergenIcon, ChecklistIcon, ChildIcon, SettingsIcon, ShuffleIcon } from '../icons';
+import { TABS, getTab } from '../tabs';
 import { SHORT_SCREEN_HEIGHT, clamp, colors, radii } from '../theme';
+
+const TAB_ICONS = { random: ShuffleIcon, assemble: ChecklistIcon };
+const tabsWithIcons = TABS.map((tab) => ({ ...tab, Icon: TAB_ICONS[tab.id] }));
 
 // Аналог .mobile-home. Значения env(safe-area-inset-*) приходят из
 // react-native-safe-area-context, clamp() и vw считаются от ширины окна,
 // а @media (max-height: 700px) — от его высоты.
 const HomeScreen = ({
-  allergenCount, childMode, childToastVersion, onAllergens, onChildMode, onRandom, onIngredients,
+  allergenCount, childMode, childToastVersion, activeTab, onTabChange,
+  onAllergens, onChildMode, onRandom, onIngredients,
 }) => {
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const shortScreen = height <= SHORT_SCREEN_HEIGHT;
+  const tab = getTab(activeTab);
+  const onAction = tab.id === 'random' ? onRandom : onIngredients;
 
   return (
     <View
@@ -22,9 +30,8 @@ const HomeScreen = ({
         paddingTop: shortScreen
           ? Math.max(48, insets.top + 20)
           : Math.max(80, insets.top + 33),
-        paddingBottom: shortScreen
-          ? Math.max(24, insets.bottom)
-          : Math.max(34, insets.bottom + 1),
+        // Место под плавающий таб-бар, чтобы карточка не уходила под него.
+        paddingBottom: Math.max(TAB_BAR_BOTTOM, insets.bottom) + TAB_BAR_HEIGHT + 16,
       }]}
     >
       {childMode && childToastVersion > 0 ? <ChildModeToast key={childToastVersion} /> : null}
@@ -53,30 +60,15 @@ const HomeScreen = ({
         <RoundControl Icon={SettingsIcon} label="Настройки" />
       </View>
 
-      <View accessibilityLabel="Выбор способа" style={styles.actions}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onRandom}
-          style={({ pressed }) => [
-            styles.actionCard,
-            { minHeight: shortScreen ? 190 : 220 },
-            pressed && styles.pressed,
-          ]}
-        >
-          <Text style={styles.actionLabel}>Реши за меня</Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onIngredients}
-          style={({ pressed }) => [
-            styles.actionCard,
-            { minHeight: shortScreen ? 190 : 220 },
-            pressed && styles.pressed,
-          ]}
-        >
-          <Text style={styles.actionLabel}>Соберу сам</Text>
-        </Pressable>
-      </View>
+      <Pressable
+        accessibilityRole="button"
+        onPress={onAction}
+        style={({ pressed }) => [styles.actionCard, pressed && styles.pressed]}
+      >
+        <Text style={styles.actionLabel}>{tab.action}</Text>
+      </Pressable>
+
+      <LinearTabBar tabs={tabsWithIcons} activeTab={tab.id} onChange={onTabChange} />
     </View>
   );
 };
@@ -92,7 +84,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  actions: { flex: 1, gap: 16.5 },
   actionCard: {
     flex: 1,
     borderWidth: 1,

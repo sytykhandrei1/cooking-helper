@@ -23,6 +23,9 @@ export const colors = {
   switchTrack: '#48484d',
   errorText: '#ffd2cb',
   errorSurface: '#48221d',
+
+  // Плавающий таб-бар, значения из expo-linear-like-bottom-tabs.
+  tabPill: 'rgba(126, 126, 126, 0.1)',
 };
 
 export const radii = {
@@ -30,6 +33,7 @@ export const radii = {
   card: 31.5,
   sheet: 30,
   toggleList: 22,
+  tabBar: 25,
   row: 15,
   pill: 999,
 };
@@ -42,6 +46,7 @@ export const timings = {
   toastIn: 220,
   toastOut: 180,
   toastVisibleFor: 2800,
+  tabSelect: 300,
 };
 
 export const easing = { standard: [0.2, 0.8, 0.2, 1] };
