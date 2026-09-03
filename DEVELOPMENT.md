@@ -23,13 +23,11 @@ app.json                 Expo metadata
 app.config.js            Web base URL configuration
 src/native/              Production UI, screens, components, theme and icons
 src/data/                Shared dish data
-src/utils/               Shared matching and layout logic
+src/utils/               Shared matching and ingredient-visual logic
 scripts/check-dishes.js  Database validation
 wrangler.jsonc           Cloudflare Workers static-assets configuration
+vitest.config.js         Test runner configuration
 ```
-
-The Vite implementation (`index.html`, `src/App.jsx`, `src/components/`, CSS)
-is legacy migration code. Keep it isolated from production deployment.
 
 ## Commands
 
@@ -42,8 +40,6 @@ npm run quality         # validate the dish database
 npm test                # Vitest suite
 npm run build           # production Expo web export to dist-native/
 npm run check           # quality + tests + production build
-npm run legacy:start    # old Vite UI only
-npm run legacy:build    # old Vite build only
 npm run git:identity    # verify GitHub contribution attribution
 ```
 

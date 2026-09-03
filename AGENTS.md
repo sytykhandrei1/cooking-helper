@@ -9,7 +9,7 @@ This file is the authoritative operating guide for agents working in this reposi
 - Production URL: <https://cooking-helper.asytykh.workers.dev/>.
 - Every push to `main` runs `.github/workflows/deploy-workers.yml` and deploys `dist-native/` to the Cloudflare Worker named `cooking-helper`.
 - GitHub Pages, `gh-pages`, Netlify, and GitLab Pages are not production targets.
-- The Vite UI in `src/App.jsx`, `src/components/`, and the CSS files is legacy migration code. Use it only through `npm run legacy:start` or `npm run legacy:build`; never deploy it as production.
+- The legacy Vite UI has been removed. Expo/React Native Web in `src/native/` is the only interface.
 
 ## Git attribution is mandatory
 

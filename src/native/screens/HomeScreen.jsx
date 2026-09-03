@@ -40,18 +40,22 @@ const HomeScreen = ({
         </View>
 
         <View style={styles.center}>
-          {isAssemble ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Выбранные продукты: ${selectionSummary(selectedIngredients)}`}
-              onPress={onEditIngredients}
-              style={({ pressed }) => [styles.summaryTap, pressed && styles.pressed]}
-            >
-              <Text style={[styles.summary, { color: colors.text }]}>
-                {selectionSummary(selectedIngredients)}
-              </Text>
-            </Pressable>
-          ) : null}
+          {/* Слот держит высоту строки и на «Рандоме», где текста нет:
+              иначе кнопка и круглые контролы прыгали бы при смене таба. */}
+          <View style={styles.summarySlot}>
+            {isAssemble ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Выбранные продукты: ${selectionSummary(selectedIngredients)}`}
+                onPress={onEditIngredients}
+                style={({ pressed }) => pressed && styles.pressed}
+              >
+                <Text style={[styles.summary, { color: colors.text }]}>
+                  {selectionSummary(selectedIngredients)}
+                </Text>
+              </Pressable>
+            ) : null}
+          </View>
 
           <Pressable
             accessibilityRole="button"
@@ -97,7 +101,8 @@ const styles = StyleSheet.create({
   content: { flex: 1, width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center' },
   header: { alignItems: 'center' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 28 },
-  summaryTap: { maxWidth: '100%' },
+  // minHeight равен lineHeight строки: одна строка резервируется всегда.
+  summarySlot: { minHeight: 36, maxWidth: '100%', alignItems: 'center', justifyContent: 'flex-end' },
   summary: { fontSize: 30, lineHeight: 36, textAlign: 'center' },
   // Кнопка обжимает надпись: 12 px по краям, высота 56, полное скругление.
   mainAction: {

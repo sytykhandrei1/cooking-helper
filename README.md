@@ -13,10 +13,8 @@ Production-интерфейс построен на Expo, React Native и `react
 - `src/native/` — активный интерфейс;
 - `src/data/` и `src/utils/` — общая база блюд и логика подбора;
 - `dist-native/` — генерируемая production-сборка;
-- `wrangler.jsonc` — публикация статических файлов в Cloudflare Workers.
-
-Старый Vite-интерфейс временно остаётся в `src/App.jsx`, `src/components/` и
-CSS-файлах как код миграции. Он не является production-приложением.
+- `wrangler.jsonc` — публикация статических файлов в Cloudflare Workers;
+- `vitest.config.js` — конфигурация тестов.
 
 ## Локальная разработка
 
@@ -35,13 +33,6 @@ npm run quality
 npm test
 npm run build      # Expo web export в dist-native/
 npm run check      # все три команды последовательно
-```
-
-Legacy Vite запускается только явно:
-
-```bash
-npm run legacy:start
-npm run legacy:build
 ```
 
 ## Деплой
