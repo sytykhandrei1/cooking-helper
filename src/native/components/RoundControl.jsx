@@ -15,7 +15,7 @@ const RoundControl = ({ Icon, active, label, accessibilityState, onPress }) => {
       onPress={onPress}
       style={({ pressed }) => [
         styles.control,
-        { backgroundColor: colors.control },
+        { borderColor: colors.control },
         pressed && styles.pressed,
       ]}
     >
@@ -25,10 +25,12 @@ const RoundControl = ({ Icon, active, label, accessibilityState, onPress }) => {
 };
 
 const styles = StyleSheet.create({
+  // Обводка вместо заливки: 1 px тем же цветом, каким кнопки были залиты.
   control: {
     width: 56,
     height: 56,
     borderRadius: radii.control,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -126,7 +126,8 @@ export const ingredientVisualLabel = (raw) => {
 
   const withoutQuantity = original
     .replace(/^\d+(?:[.,]\d+)?\s*/, '')
-    .replace(/^(?:(?:кг|гр?|мл|л|шт)\.?|(?:ст|ч)\.?\s*л\.?)\s*/i, '')
+    // \s+ обязателен: без него «г» отрезалось от «говядины», а «гр» — от «грибов».
+    .replace(/^(?:(?:кг|гр?|мл|л|шт)\.?|(?:ст|ч)\.?\s*л\.?)\s+/i, '')
     .trim();
   const normalized = normalizeRawIngredient(withoutQuantity);
 

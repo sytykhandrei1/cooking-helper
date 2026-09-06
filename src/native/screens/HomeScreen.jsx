@@ -10,6 +10,11 @@ import { TABS, getTab, mainActionLabel, selectionSummary } from '../tabs';
 import { useTheme } from '../ThemeContext';
 import { CONTENT_MAX_WIDTH, SHORT_SCREEN_HEIGHT } from '../theme';
 
+const CONTROL_SIZE = 56;
+const CONTROL_GAP = 16;
+// Кнопка ровно по ширине ряда из трёх круглых контролов под ней.
+const MAIN_ACTION_WIDTH = CONTROL_SIZE * 3 + CONTROL_GAP * 2;
+
 const HomeScreen = ({
   allergenCount, childMode, childToastVersion, activeTab, onTabChange,
   selectedIngredients = [], onAllergens, onChildMode, onMainAction, onEditIngredients,
@@ -62,11 +67,11 @@ const HomeScreen = ({
             onPress={onMainAction}
             style={({ pressed }) => [
               styles.mainAction,
-              { backgroundColor: colors.accent },
+              { backgroundColor: colors.control },
               pressed && styles.pressed,
             ]}
           >
-            <Text style={[styles.mainActionLabel, { color: colors.accentInk }]}>
+            <Text style={[styles.mainActionLabel, { color: colors.text }]} numberOfLines={1}>
               {mainActionLabel(tab.id, selectedIngredients.length)}
             </Text>
           </Pressable>
@@ -104,16 +109,16 @@ const styles = StyleSheet.create({
   // minHeight равен lineHeight строки: одна строка резервируется всегда.
   summarySlot: { minHeight: 36, maxWidth: '100%', alignItems: 'center', justifyContent: 'flex-end' },
   summary: { fontSize: 30, lineHeight: 36, textAlign: 'center' },
-  // Кнопка обжимает надпись: 12 px по краям, высота 56, полное скругление.
   mainAction: {
-    height: 56,
+    width: MAIN_ACTION_WIDTH,
+    height: CONTROL_SIZE,
     paddingHorizontal: 12,
-    borderRadius: 28,
+    borderRadius: CONTROL_SIZE / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   mainActionLabel: { fontSize: 20, fontWeight: '500' },
-  controls: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  controls: { flexDirection: 'row', alignItems: 'center', gap: CONTROL_GAP },
   pressed: { opacity: 0.7 },
 });
 
