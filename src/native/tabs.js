@@ -19,3 +19,11 @@ export const mainActionLabel = (tabId, selectedCount = 0) => {
 export const selectionSummary = (selected = []) => (
   selected.length ? selected.join(', ') : 'Ничего не выбрано'
 );
+
+// Все возможные надписи основной кнопки: по ним заранее меряется ширина,
+// чтобы её смену можно было анимировать.
+export const MAIN_ACTION_LABELS = [...new Set([
+  mainActionLabel('random'),
+  mainActionLabel('assemble', 0),
+  mainActionLabel('assemble', 1),
+])];

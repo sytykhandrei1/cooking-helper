@@ -90,6 +90,7 @@ export const timings = {
   toastOut: 180,
   toastVisibleFor: 2800,
   tabSelect: 300,
+  mainAction: 260,
   theme: 260,
 };
 

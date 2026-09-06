@@ -1,19 +1,20 @@
-import React from 'react';
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ChildModeToast from '../components/ChildModeToast';
 import LinearTabBar, { TAB_BAR_BOTTOM, TAB_BAR_HEIGHT } from '../components/LinearTabBar';
 import RoundControl from '../components/RoundControl';
 import ThemeToggle from '../components/ThemeToggle';
 import { AllergenIcon, ChildIcon, SettingsIcon } from '../icons';
-import { TABS, getTab, mainActionLabel, selectionSummary } from '../tabs';
+import { MAIN_ACTION_LABELS, TABS, getTab, mainActionLabel, selectionSummary } from '../tabs';
 import { useTheme } from '../ThemeContext';
-import { CONTENT_MAX_WIDTH, SHORT_SCREEN_HEIGHT } from '../theme';
+import { CONTENT_MAX_WIDTH, SHORT_SCREEN_HEIGHT, easing, timings } from '../theme';
 
+const BEZIER = Easing.bezier(...easing.standard);
 const CONTROL_SIZE = 56;
 const CONTROL_GAP = 16;
-// Кнопка ровно по ширине ряда из трёх круглых контролов под ней.
-const MAIN_ACTION_WIDTH = CONTROL_SIZE * 3 + CONTROL_GAP * 2;
+// Кнопка обжимает надпись: по 16 px слева и справа.
+const MAIN_ACTION_PADDING = 16;
 
 const HomeScreen = ({
   allergenCount, childMode, childToastVersion, activeTab, onTabChange,
@@ -25,6 +26,61 @@ const HomeScreen = ({
   const shortScreen = height <= SHORT_SCREEN_HEIGHT;
   const tab = getTab(activeTab);
   const isAssemble = tab.id === 'assemble';
+  const label = mainActionLabel(tab.id, selectedIngredients.length);
+
+  // Ширину каждой надписи меряем заранее на скрытых копиях: анимировать
+  // width можно только к известному числу, а сам текст меняется мгновенно.
+  const [labelWidths, setLabelWidths] = useState({});
+  // Надпись меняется не мгновенно, а через затухание: иначе на середине
+  // анимации новый текст обрезается многоточием в ещё не выросшей кнопке.
+  const [shownLabel, setShownLabel] = useState(label);
+  const labelOpacity = useRef(new Animated.Value(1)).current;
+  const actionWidth = useRef(new Animated.Value(0)).current;
+  const settled = useRef(false);
+  const target = labelWidths[label];
+  // Ширину надписи фиксируем по замеру: тогда обрезать нечего и многоточие
+  // не появляется, даже пока кнопка ещё не доросла.
+  const shownWidth = labelWidths[shownLabel] == null
+    ? undefined
+    : Math.ceil(labelWidths[shownLabel]) + 2;
+
+  useEffect(() => {
+    if (label === shownLabel) return;
+    // Без очистки намеренно: stop() здесь останавливал бы уже не затухание,
+    // а обратное проявление, и надпись замирала невидимой.
+    Animated.timing(labelOpacity, {
+      toValue: 0,
+      duration: 90,
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (!finished) return;
+      setShownLabel(label);
+      Animated.timing(labelOpacity, {
+        toValue: 1,
+        duration: 170,
+        easing: BEZIER,
+        useNativeDriver: true,
+      }).start();
+    });
+  }, [label, shownLabel, labelOpacity]);
+
+  useEffect(() => {
+    if (target == null) return;
+    // +2 — запас на округление: onLayout отдаёт ширину вниз, и текста
+    // не хватало буквально на долю пикселя, включая многоточие.
+    const to = Math.ceil(target) + MAIN_ACTION_PADDING * 2 + 2;
+    if (!settled.current) {
+      settled.current = true;
+      actionWidth.setValue(to);
+      return;
+    }
+    Animated.timing(actionWidth, {
+      toValue: to,
+      duration: timings.mainAction,
+      easing: BEZIER,
+      useNativeDriver: false,
+    }).start();
+  }, [target, actionWidth]);
 
   return (
     <View
@@ -38,6 +94,22 @@ const HomeScreen = ({
       }]}
     >
       {childMode && childToastVersion > 0 ? <ChildModeToast key={childToastVersion} /> : null}
+
+      <View style={styles.measure} pointerEvents="none" aria-hidden>
+        {MAIN_ACTION_LABELS.map((item) => (
+          <Text
+            key={item}
+            style={[styles.mainActionLabel, styles.measureItem]}
+            numberOfLines={1}
+            onLayout={(event) => {
+              const { width: w } = event.nativeEvent.layout;
+              setLabelWidths((current) => (current[item] ? current : { ...current, [item]: w }));
+            }}
+          >
+            {item}
+          </Text>
+        ))}
+      </View>
 
       <View style={styles.content}>
         <View style={styles.header}>
@@ -62,19 +134,26 @@ const HomeScreen = ({
             ) : null}
           </View>
 
-          <Pressable
-            accessibilityRole="button"
-            onPress={onMainAction}
-            style={({ pressed }) => [
-              styles.mainAction,
-              { backgroundColor: colors.control },
-              pressed && styles.pressed,
-            ]}
-          >
-            <Text style={[styles.mainActionLabel, { color: colors.text }]} numberOfLines={1}>
-              {mainActionLabel(tab.id, selectedIngredients.length)}
-            </Text>
-          </Pressable>
+          <Animated.View style={[styles.mainActionBox, target == null ? styles.hidden : null, { width: actionWidth }]}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={onMainAction}
+              style={({ pressed }) => [
+                styles.mainAction,
+                { backgroundColor: colors.control },
+                pressed && styles.pressed,
+              ]}
+            >
+              <Animated.Text
+                style={[
+                  styles.mainActionLabel,
+                  { color: colors.text, opacity: labelOpacity, width: shownWidth },
+                ]}
+              >
+                {shownLabel}
+              </Animated.Text>
+            </Pressable>
+          </Animated.View>
 
           <View accessibilityLabel="Фильтры блюда" style={styles.controls}>
             <RoundControl
@@ -109,15 +188,24 @@ const styles = StyleSheet.create({
   // minHeight равен lineHeight строки: одна строка резервируется всегда.
   summarySlot: { minHeight: 36, maxWidth: '100%', alignItems: 'center', justifyContent: 'flex-end' },
   summary: { fontSize: 30, lineHeight: 36, textAlign: 'center' },
-  mainAction: {
-    width: MAIN_ACTION_WIDTH,
+  mainActionBox: {
     height: CONTROL_SIZE,
-    paddingHorizontal: 12,
     borderRadius: CONTROL_SIZE / 2,
+    overflow: 'hidden',
+  },
+  mainAction: {
+    flex: 1,
+    paddingHorizontal: MAIN_ACTION_PADDING,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  mainActionLabel: { fontSize: 20, fontWeight: '500' },
+  hidden: { opacity: 0 },
+  // Копии надписей вне потока: нужны только чтобы узнать их ширину.
+  // Ширина контейнера задана с запасом, иначе текст переносится по словам
+  // и меряется короче, чем есть.
+  measure: { position: 'absolute', top: 0, left: 0, width: 1000, opacity: 0 },
+  measureItem: { position: 'absolute', top: 0, left: 0 },
+  mainActionLabel: { fontSize: 20, fontWeight: '500', textAlign: 'center' },
   controls: { flexDirection: 'row', alignItems: 'center', gap: CONTROL_GAP },
   pressed: { opacity: 0.7 },
 });
