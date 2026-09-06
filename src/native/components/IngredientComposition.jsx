@@ -22,16 +22,13 @@ const artworkByKey = {
   tomato: require('../../assets/ingredients/tomato.png'),
 };
 
-// Раскладки перенесены из веб-версии: [x, y, поворот, слой] в системе 343×height.
-const layouts = {
-  1: { height: 150, items: [[114, 15, 0, 2]] },
-  2: { height: 160, items: [[66, 26, -8, 2], [162, 10, 7, 3]] },
-  3: { height: 174, items: [[10, 42, -9, 2], [113, 8, 4, 4], [216, 42, 8, 3]] },
-  4: { height: 190, items: [[-3, 52, -10, 2], [79, 8, 6, 4], [163, 48, -4, 3], [230, 8, 8, 5]] },
-  5: { height: 208, items: [[-4, 74, -9, 2], [57, 16, 5, 4], [120, 76, -6, 3], [183, 10, 7, 5], [236, 72, -4, 4]] },
-  6: { height: 228, items: [[-5, 76, -10, 2], [51, 16, 6, 4], [108, 80, -4, 3], [166, 8, 7, 5], [222, 74, -7, 4], [112, 118, 3, 6]] },
-  7: { height: 246, items: [[-5, 80, -10, 2], [49, 18, 6, 4], [104, 84, -4, 3], [159, 8, 7, 5], [216, 74, -7, 4], [52, 132, 4, 6], [161, 128, -5, 7]] },
+// Раскладка сеткой, как на референсных съёмках: вид сверху, предметы стоят
+// ровными рядами, не перекрываются и не повёрнуты. Последний ряд центрируется.
+const ROWS = {
+  1: [1], 2: [2], 3: [3], 4: [2, 2], 5: [3, 2], 6: [3, 3], 7: [4, 3],
 };
+
+const CELL_GAP = 12;
 
 const BASE_WIDTH = 343;
 const toPercent = (value, total) => `${(value / total) * 100}%`;
@@ -48,13 +45,15 @@ const IngredientPlaceholder = ({ label }) => {
     <View
       accessibilityRole="image"
       accessibilityLabel={`Изображение продукта «${label}» пока не добавлено`}
-      style={styles.placeholder}
+      style={styles.placeholderBox}
     >
-      <Svg style={StyleSheet.absoluteFill} viewBox="0 0 120 120">
-        <Path d={BLOB} fill={colors.shimmer} />
-        <Path d={LEAF} fill={colors.shimmer} />
-      </Svg>
-      <Text style={[styles.placeholderLabel, { color: colors.accent }]}>{label}</Text>
+      <View style={styles.placeholderShape}>
+        <Svg style={StyleSheet.absoluteFill} viewBox="0 0 120 120">
+          <Path d={BLOB} fill={colors.shimmer} />
+          <Path d={LEAF} fill={colors.shimmer} />
+        </Svg>
+        <Text style={[styles.placeholderLabel, { color: colors.accent }]}>{label}</Text>
+      </View>
     </View>
   );
 };
@@ -63,15 +62,28 @@ const IngredientComposition = ({ dish }) => {
   const ingredients = getDishVisualIngredients(dish, { limit: 7 });
   if (!ingredients.length) return null;
 
-  const layout = layouts[ingredients.length];
+  const rows = ROWS[ingredients.length];
+  const columns = Math.max(...rows);
+  const cell = (BASE_WIDTH - CELL_GAP * (columns - 1)) / columns;
+  const height = cell * rows.length + CELL_GAP * (rows.length - 1);
+
+  let taken = 0;
+  const placed = rows.flatMap((count, rowIndex) => {
+    const rowWidth = cell * count + CELL_GAP * (count - 1);
+    const offset = (BASE_WIDTH - rowWidth) / 2;
+    return ingredients.slice(taken, (taken += count)).map((item, columnIndex) => ({
+      ...item,
+      x: offset + columnIndex * (cell + CELL_GAP),
+      y: rowIndex * (cell + CELL_GAP),
+    }));
+  });
 
   return (
     <View
       accessibilityLabel="Продукты для блюда"
-      style={[styles.composition, { aspectRatio: BASE_WIDTH / layout.height }]}
+      style={[styles.composition, { aspectRatio: BASE_WIDTH / height }]}
     >
-      {ingredients.map(({ raw, key }, index) => {
-        const [x, y, rotation, layer] = layout.items[index];
+      {placed.map(({ raw, key, x, y }, index) => {
         const image = key ? artworkByKey[key] : null;
 
         return (
@@ -80,9 +92,8 @@ const IngredientComposition = ({ dish }) => {
             pointerEvents="none"
             style={[styles.visual, {
               left: toPercent(x, BASE_WIDTH),
-              top: toPercent(y, layout.height),
-              zIndex: layer,
-              transform: [{ rotate: `${rotation}deg` }],
+              top: toPercent(y, height),
+              width: toPercent(cell, BASE_WIDTH),
             }]}
           >
             {image
@@ -97,11 +108,14 @@ const IngredientComposition = ({ dish }) => {
 
 const styles = StyleSheet.create({
   composition: { width: '100%', marginTop: 12, marginBottom: 2 },
-  visual: { position: 'absolute', width: '33.82%', aspectRatio: 1 },
+  visual: { position: 'absolute', aspectRatio: 1 },
   image: { width: '100%', height: '100%' },
-  placeholder: { width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' },
+  // Снимок вписан внутрь ячейки с полями, поэтому заглушка тоже ужимается —
+  // иначе она заполняет ячейку целиком и перевешивает реальные продукты.
+  placeholderBox: { width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' },
+  placeholderShape: { width: '76%', height: '76%', alignItems: 'center', justifyContent: 'center' },
   placeholderLabel: {
-    width: '68%',
+    width: '88%',
     marginTop: '5%',
     fontSize: 11,
     fontWeight: '600',
